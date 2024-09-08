@@ -1,32 +1,39 @@
 "use client";
 
+// Import necessary libraries and components
 import { useState } from "react";
 import { Form, Input, InputNumber, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import AdminLayout from "@/app/components/admin/AdminLayout";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
+// Dynamically import ReactQuill for rich text editing, disabling server-side rendering
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 
 const AddProduct = () => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm(); // Initialize form
+  const [loading, setLoading] = useState(false); // State for loading status
+  const router = useRouter(); // Router for navigation
 
+  // Function to handle form submission
   const onFinish = async (values) => {
-    setLoading(true);
+    setLoading(true); // Set loading to true when form is submitted
     try {
       // Here you would typically send the data to your API
       console.log("Received values of form: ", values);
-      message.success("Product added successfully");
-      form.resetFields();
+      message.success("Product added successfully"); // Show success message
+      form.resetFields(); // Reset form fields
+      router.push("/admin/products"); // Redirect to products page
     } catch (error) {
-      message.error("Failed to add product");
+      message.error("Failed to add product"); // Show error message
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false after submission
     }
   };
 
+  // Normalize the file upload event
   const normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
@@ -34,6 +41,7 @@ const AddProduct = () => {
     return e?.fileList;
   };
 
+  // Configuration for ReactQuill toolbar
   const modules = {
     toolbar: [
       [{ header: [1, 2, false] }],
@@ -44,6 +52,7 @@ const AddProduct = () => {
     ],
   };
 
+  // Formats supported by ReactQuill
   const formats = [
     "header",
     "bold",
@@ -65,6 +74,7 @@ const AddProduct = () => {
         layout="vertical"
         autoComplete="off"
       >
+        {/* Product Name Input */}
         <Form.Item
           name="name"
           label="Product Name"
@@ -75,6 +85,7 @@ const AddProduct = () => {
           <Input />
         </Form.Item>
 
+        {/* Price Input */}
         <Form.Item
           name="price"
           label="Price"
@@ -89,6 +100,7 @@ const AddProduct = () => {
           />
         </Form.Item>
 
+        {/* Discount Price Input with validation */}
         <Form.Item
           name="discountPrice"
           label="Discount Price"
@@ -117,6 +129,7 @@ const AddProduct = () => {
           />
         </Form.Item>
 
+        {/* Description Input using ReactQuill */}
         <Form.Item
           name="description"
           label="Description"
@@ -130,6 +143,7 @@ const AddProduct = () => {
           />
         </Form.Item>
 
+        {/* Product Image Upload */}
         <Form.Item
           name="image"
           label="Product Image"
@@ -143,8 +157,14 @@ const AddProduct = () => {
           </Upload>
         </Form.Item>
 
+        {/* Submit Button */}
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            style={{ backgroundColor: "red" }} // Updated button color to red
+          >
             Add Product
           </Button>
         </Form.Item>

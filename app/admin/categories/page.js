@@ -12,41 +12,41 @@ import {
 } from "@ant-design/icons";
 import AdminLayout from "@/app/components/admin/AdminLayout";
 
-const Places = () => {
-  // State to store places data
-  const [places, setPlaces] = useState([]);
+const Categories = () => {
+  // State to store categories data
+  const [categories, setCategories] = useState([]);
   // State to manage loading status
   const [loading, setLoading] = useState(true);
   // State to manage expanded rows in the table
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   // State to control modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
-  // State to store the place being edited
-  const [editingPlace, setEditingPlace] = useState(null);
+  // State to store the category being edited
+  const [editingCategory, setEditingCategory] = useState(null);
   // Form instance for the modal form
   const [form] = Form.useForm();
 
-  // Fetch places data on component mount
+  // Fetch categories data on component mount
   useEffect(() => {
     const fetchData = async () => {
-      // Example static data for places
-      const placesData = [
+      // Example static data for categories
+      const categoriesData = [
         {
           key: "1",
-          name: "Place 1",
-          subPlaces: [
-            { key: "1-1", name: "Sub Place 1-1" },
-            { key: "1-2", name: "Sub Place 1-2" },
+          name: "Category 1",
+          subCategories: [
+            { key: "1-1", name: "Sub Category 1-1" },
+            { key: "1-2", name: "Sub Category 1-2" },
           ],
         },
         {
           key: "2",
-          name: "Place 2",
-          subPlaces: [{ key: "2-1", name: "Sub Place 2-1" }],
+          name: "Category 2",
+          subCategories: [{ key: "2-1", name: "Sub Category 2-1" }],
         },
       ];
 
-      setPlaces(placesData);
+      setCategories(categoriesData);
       setLoading(false);
     };
 
@@ -58,11 +58,11 @@ const Places = () => {
     setExpandedRowKeys(expanded ? [record.key] : []);
   };
 
-  // Function to show modal for adding/editing place
-  const showModal = (place = null) => {
-    setEditingPlace(place);
-    if (place) {
-      form.setFieldsValue(place);
+  // Function to show modal for adding/editing category
+  const showModal = (category = null) => {
+    setEditingCategory(category);
+    if (category) {
+      form.setFieldsValue(category);
     } else {
       form.resetFields();
     }
@@ -72,32 +72,42 @@ const Places = () => {
   // Function to handle modal cancel action
   const handleCancel = () => {
     setIsModalVisible(false);
-    setEditingPlace(null);
+    setEditingCategory(null);
     form.resetFields();
   };
 
   // Function to handle form submission
   const onFinish = (values) => {
-    if (editingPlace) {
-      // Update existing place
-      const updatedPlaces = places.map((place) =>
-        place.key === editingPlace.key ? { ...place, ...values } : place
+    if (editingCategory) {
+      // Update existing category
+      const updatedCategories = categories.map((category) =>
+        category.key === editingCategory.key
+          ? { ...category, ...values }
+          : category
       );
-      setPlaces(updatedPlaces);
-      message.success("Place updated successfully");
+      setCategories(updatedCategories);
+      message.success("Category updated successfully");
     } else {
-      // Add new place
-      const newPlace = {
+      // Add new category
+      const newCategory = {
         key: Date.now().toString(),
         ...values,
-        subPlaces: [],
+        subCategories: [],
       };
-      setPlaces([...places, newPlace]);
-      message.success("Place added successfully");
+      setCategories([...categories, newCategory]);
+      message.success("Category added successfully");
     }
     setIsModalVisible(false);
-    setEditingPlace(null);
     form.resetFields();
+  };
+
+  // Function to handle category deletion
+  const handleDelete = (key) => {
+    const updatedCategories = categories.filter(
+      (category) => category.key !== key
+    );
+    setCategories(updatedCategories);
+    message.success("Category deleted successfully");
   };
 
   // Define table columns
@@ -137,6 +147,7 @@ const Places = () => {
           />
           <Button
             icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.key)}
             style={{ backgroundColor: "red", color: "white" }} // Theme updated to red
           />
         </Space>
@@ -144,10 +155,15 @@ const Places = () => {
     },
   ];
 
-  // Define columns for the expanded sub-places table
+  // Define expanded row render for sub-categories
   const expandedRowRender = (record) => {
     const subColumns = [
-      { title: "Sub Place Name", dataIndex: "name", key: "name", width: "50%" },
+      {
+        title: "Sub Category Name",
+        dataIndex: "name",
+        key: "name",
+        width: "50%",
+      },
       {
         title: () => <div style={{ textAlign: "right" }}>Actions</div>,
         key: "actions",
@@ -164,7 +180,8 @@ const Places = () => {
             />
             <Button
               icon={<DeleteOutlined />}
-              style={{ backgroundColor: "red", color: "white" }} // Theme updated to red
+              onClick={() => handleDelete(subRecord.key)}
+              style={{ backgroundColor: "red", color: "white" }}
             />
           </Space>
         ),
@@ -174,8 +191,9 @@ const Places = () => {
     return (
       <Table
         columns={subColumns}
-        dataSource={record.subPlaces}
+        dataSource={record.subCategories}
         pagination={false}
+        rowKey="key"
       />
     );
   };
@@ -183,56 +201,46 @@ const Places = () => {
   return (
     <AdminLayout>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Places</h1>
+        <h1 className="text-2xl font-bold">Categories</h1>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => showModal()}
           style={{ backgroundColor: "#001529" }}
         >
-          Add New Place
+          Add New Category
         </Button>
       </div>
       <Table
         columns={columns}
-        dataSource={places}
+        dataSource={categories}
         loading={loading}
         expandable={{
           expandedRowRender,
           expandedRowKeys,
           onExpand: handleExpand,
         }}
-        pagination={{ pageSize: 10 }}
+        rowKey="key"
+        style={{ marginTop: 16 }}
       />
       <Modal
-        title={editingPlace ? "Edit Place" : "Add New Place"}
+        title={editingCategory ? "Edit Category" : "Add New Category"}
         visible={isModalVisible}
         onCancel={handleCancel}
-        footer={null}
+        onOk={() => form.submit()}
       >
-        <Form
-          form={form}
-          name="add_edit_place"
-          onFinish={onFinish}
-          layout="vertical"
-        >
+        <Form form={form} onFinish={onFinish} layout="vertical">
           <Form.Item
             name="name"
-            label="Place Name"
+            label="Name"
             rules={[
-              { required: true, message: "Please input the place name!" },
+              {
+                required: true,
+                message: "Please input the name of the category!",
+              },
             ]}
           >
             <Input />
-          </Form.Item>
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ backgroundColor: "#001529" }}
-            >
-              {editingPlace ? "Update Place" : "Add Place"}
-            </Button>
           </Form.Item>
         </Form>
       </Modal>
@@ -240,4 +248,4 @@ const Places = () => {
   );
 };
 
-export default Places;
+export default Categories;

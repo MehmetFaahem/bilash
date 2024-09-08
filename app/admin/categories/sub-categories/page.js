@@ -14,104 +14,94 @@ import {
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import AdminLayout from "@/app/components/admin/AdminLayout";
 
-const SubPlaces = () => {
-  // State to store sub-places data
-  const [subPlaces, setSubPlaces] = useState([]);
-  // State to store places data
-  const [places, setPlaces] = useState([]);
-  // State to manage loading state
+const SubCategories = () => {
+  const [subCategories, setSubCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  // State to manage modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
-  // State to manage the currently editing sub-place
-  const [editingSubPlace, setEditingSubPlace] = useState(null);
-  // Form instance for the modal form
+  const [editingSubCategory, setEditingSubCategory] = useState(null);
   const [form] = Form.useForm();
 
-  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       // Example static data
-      const placesData = [
+      const categoriesData = [
         {
           key: "1",
-          name: "Place 1",
-          subPlaces: [
-            { key: "1-1", name: "Sub Place 1-1", place: "Place 1" },
-            { key: "1-2", name: "Sub Place 1-2", place: "Place 1" },
+          name: "Category 1",
+          subCategories: [
+            { key: "1-1", name: "Sub Category 1-1", category: "Category 1" },
+            { key: "1-2", name: "Sub Category 1-2", category: "Category 1" },
           ],
         },
         {
           key: "2",
-          name: "Place 2",
-          subPlaces: [{ key: "2-1", name: "Sub Place 2-1", place: "Place 2" }],
+          name: "Category 2",
+          subCategories: [
+            { key: "2-1", name: "Sub Category 2-1", category: "Category 2" },
+          ],
         },
       ];
 
-      // Flatten sub-places data from places data
-      const subPlacesData = placesData.flatMap((place) => place.subPlaces);
+      const subCategoriesData = categoriesData.flatMap(
+        (category) => category.subCategories
+      );
 
-      // Set state with fetched data
-      setPlaces(placesData);
-      setSubPlaces(subPlacesData);
+      setCategories(categoriesData);
+      setSubCategories(subCategoriesData);
       setLoading(false);
     };
 
     fetchData();
   }, []);
 
-  // Function to show modal for adding/editing sub-place
-  const showModal = (subPlace = null) => {
-    setEditingSubPlace(subPlace);
-    if (subPlace) {
-      form.setFieldsValue(subPlace);
+  const showModal = (subCategory = null) => {
+    setEditingSubCategory(subCategory);
+    if (subCategory) {
+      form.setFieldsValue(subCategory);
     } else {
       form.resetFields();
     }
     setIsModalVisible(true);
   };
 
-  // Function to handle modal cancel action
   const handleCancel = () => {
     setIsModalVisible(false);
-    setEditingSubPlace(null);
+    setEditingSubCategory(null);
     form.resetFields();
   };
 
-  // Function to handle form submission
   const onFinish = (values) => {
-    if (editingSubPlace) {
-      // Update existing sub-place
-      const updatedSubPlaces = subPlaces.map((subPlace) =>
-        subPlace.key === editingSubPlace.key
-          ? { ...subPlace, ...values }
-          : subPlace
+    if (editingSubCategory) {
+      // Update existing sub category
+      const updatedSubCategories = subCategories.map((subCategory) =>
+        subCategory.key === editingSubCategory.key
+          ? { ...subCategory, ...values }
+          : subCategory
       );
-      setSubPlaces(updatedSubPlaces);
-      message.success("Sub Place updated successfully");
+      setSubCategories(updatedSubCategories);
+      message.success("Sub Category updated successfully");
     } else {
-      // Add new sub-place
-      const newSubPlace = {
+      // Add new sub category
+      const newSubCategory = {
         key: Date.now().toString(),
         ...values,
       };
-      setSubPlaces([...subPlaces, newSubPlace]);
-      message.success("Sub Place added successfully");
+      setSubCategories([...subCategories, newSubCategory]);
+      message.success("Sub Category added successfully");
     }
     setIsModalVisible(false);
     form.resetFields();
   };
 
-  // Function to handle sub-place deletion
   const handleDelete = (key) => {
-    const updatedSubPlaces = subPlaces.filter(
-      (subPlace) => subPlace.key !== key
+    const updatedSubCategories = subCategories.filter(
+      (subCategory) => subCategory.key !== key
     );
-    setSubPlaces(updatedSubPlaces);
-    message.success("Sub Place deleted successfully");
+    setSubCategories(updatedSubCategories);
+    message.success("Sub Category deleted successfully");
   };
 
-  // Table columns configuration
   const columns = [
     {
       title: "Name",
@@ -119,9 +109,9 @@ const SubPlaces = () => {
       key: "name",
     },
     {
-      title: "Place",
-      dataIndex: "place",
-      key: "place",
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
     },
     {
       title: () => <div style={{ textAlign: "right" }}>Actions</div>,
@@ -149,7 +139,7 @@ const SubPlaces = () => {
   return (
     <AdminLayout>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Sub Places</h1>
+        <h1 className="text-2xl font-bold">Sub Categories</h1>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -160,18 +150,20 @@ const SubPlaces = () => {
             color: "white",
           }}
         >
-          Add New Sub Place
+          Add New Sub Category
         </Button>
       </div>
       <Table
         columns={columns}
-        dataSource={subPlaces}
+        dataSource={subCategories}
         loading={loading}
         rowKey="key"
         style={{ marginTop: 16 }}
       />
       <Modal
-        title={editingSubPlace ? "Edit Sub Place" : "Add New Sub Place"}
+        title={
+          editingSubCategory ? "Edit Sub Category" : "Add New Sub Category"
+        }
         visible={isModalVisible}
         onCancel={handleCancel}
         onOk={() => form.submit()}
@@ -183,23 +175,23 @@ const SubPlaces = () => {
             rules={[
               {
                 required: true,
-                message: "Please input the name of the sub place!",
+                message: "Please input the name of the sub category!",
               },
             ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="place"
-            label="Place"
+            name="category"
+            label="Category"
             rules={[
-              { required: true, message: "Please select the parent place!" },
+              { required: true, message: "Please select the parent category!" },
             ]}
           >
             <Select>
-              {places.map((place) => (
-                <Select.Option key={place.key} value={place.name}>
-                  {place.name}
+              {categories.map((category) => (
+                <Select.Option key={category.key} value={category.name}>
+                  {category.name}
                 </Select.Option>
               ))}
             </Select>
@@ -210,4 +202,4 @@ const SubPlaces = () => {
   );
 };
 
-export default SubPlaces;
+export default SubCategories;

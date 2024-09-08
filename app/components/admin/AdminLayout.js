@@ -1,5 +1,4 @@
 "use client";
-
 import { Layout, Menu, Grid } from "antd";
 import {
   DashboardOutlined,
@@ -16,7 +15,7 @@ import {
   StarOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const { Sider, Content } = Layout;
@@ -25,6 +24,7 @@ const { useBreakpoint } = Grid;
 
 const AdminLayout = ({ children }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const screens = useBreakpoint();
 
@@ -46,7 +46,12 @@ const AdminLayout = ({ children }) => {
         onCollapse={(collapsed) => setCollapsed(collapsed)}
         style={{ position: "fixed", height: "100vh", overflow: "auto" }}
       >
-        <Menu theme="dark" mode="inline" onClick={handleNavigation}>
+        <Menu
+          theme="dark"
+          mode="inline"
+          onClick={handleNavigation}
+          selectedKeys={[pathname]}
+        >
           {[
             {
               key: "/admin/dashboard",
@@ -54,21 +59,72 @@ const AdminLayout = ({ children }) => {
               label: "Dashboard",
             },
           ].map((item) => (
-            <Menu.Item key={item.key} icon={item.icon}>
+            <Menu.Item
+              style={{
+                backgroundColor: pathname === item.key ? "#006ed6" : "",
+              }}
+              key={item.key}
+              icon={item.icon}
+            >
               {item.label}
             </Menu.Item>
           ))}
-          <SubMenu key="products" icon={<AppstoreOutlined />} title="Products">
-            <Menu.Item key="/admin/products">All Products</Menu.Item>
-            <Menu.Item key="/admin/products/add" icon={<PlusOutlined />}>
+          <SubMenu
+            key="products"
+            icon={<AppstoreOutlined />}
+            title="Products"
+            style={{
+              backgroundColor: pathname.startsWith("/admin/products")
+                ? "#006ed6"
+                : "",
+            }}
+          >
+            <Menu.Item
+              style={{
+                backgroundColor:
+                  pathname === "/admin/products" ? "#006ed6" : "",
+              }}
+              key="/admin/products"
+            >
+              All Products
+            </Menu.Item>
+            <Menu.Item
+              style={{
+                backgroundColor:
+                  pathname === "/admin/products/add" ? "#006ed6" : "",
+              }}
+              key="/admin/products/add"
+              icon={<PlusOutlined />}
+            >
               Add Products
             </Menu.Item>
           </SubMenu>
-          <SubMenu key="places" icon={<EnvironmentOutlined />} title="Places">
-            <Menu.Item key="/admin/places">All Places</Menu.Item>
-            <Menu.Item key="/admin/sub-places">Sub Places</Menu.Item>
-            <Menu.Item key="/admin/sub-of-sub-places">
-              Sub of Sub Places
+          <SubMenu
+            key="places"
+            icon={<EnvironmentOutlined />}
+            title="Places"
+            style={{
+              backgroundColor: pathname.startsWith("/admin/places")
+                ? "#006ed6"
+                : "",
+            }}
+          >
+            <Menu.Item
+              style={{
+                backgroundColor: pathname === "/admin/places" ? "#006ed6" : "",
+              }}
+              key="/admin/places"
+            >
+              All Places
+            </Menu.Item>
+            <Menu.Item
+              style={{
+                backgroundColor:
+                  pathname === "/admin/places/sub-places" ? "#006ed6" : "",
+              }}
+              key="/admin/places/sub-places"
+            >
+              Sub Places
             </Menu.Item>
           </SubMenu>
           {[
@@ -78,7 +134,7 @@ const AdminLayout = ({ children }) => {
               label: "Categories",
             },
             {
-              key: "/admin/sub-categories",
+              key: "/admin/categories/sub-categories",
               icon: <TagsOutlined />,
               label: "Sub Categories",
             },
@@ -98,11 +154,7 @@ const AdminLayout = ({ children }) => {
               icon: <NotificationOutlined />,
               label: "Advertisements",
             },
-            {
-              key: "/admin/discounts",
-              icon: <PercentageOutlined />,
-              label: "Discounts",
-            },
+
             { key: "/admin/tokens", icon: <DollarOutlined />, label: "Tokens" },
             { key: "/admin/reviews", icon: <StarOutlined />, label: "Reviews" },
             {
@@ -111,7 +163,13 @@ const AdminLayout = ({ children }) => {
               label: "Messages",
             },
           ].map((item) => (
-            <Menu.Item key={item.key} icon={item.icon}>
+            <Menu.Item
+              style={{
+                backgroundColor: pathname === item.key ? "#006ed6" : "",
+              }}
+              key={item.key}
+              icon={item.icon}
+            >
               {item.label}
             </Menu.Item>
           ))}
