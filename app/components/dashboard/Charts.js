@@ -144,18 +144,21 @@ const Charts = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div className="p-4 h-[400px]">
-        <Bar data={barData} options={options} />
-      </div>
-      <div className="p-4 h-[400px]">
-        <Line data={lineData} options={options} />
-      </div>
-      <div className="p-4 h-[400px]">
-        <Doughnut data={doughnutData} options={options} />
-      </div>
-      <div className="p-4 h-[400px]">
-        <Bubble data={bubbleData} options={options} />
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Statistics</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="p-4 h-[400px]">
+          <Bar data={barData} options={options} />
+        </div>
+        <div className="p-4 h-[400px]">
+          <Line data={lineData} options={options} />
+        </div>
+        <div className="p-4 h-[400px]">
+          <Doughnut data={doughnutData} options={options} />
+        </div>
+        <div className="p-4 h-[400px]">
+          <Bubble data={bubbleData} options={options} />
+        </div>
       </div>
     </div>
   );

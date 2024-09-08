@@ -45,28 +45,31 @@ const countData = [
 
 const CountCards = () => {
   return (
-    <div className="flex flex-wrap -mx-2">
-      {countData.map((data, index) => (
-        <div key={index} className="w-full sm:w-1/2 lg:w-1/3 px-2 mb-4">
-          <Card>
-            <Card.Meta
-              avatar={
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {data.icon}
-                </div>
-              }
-              title={data.title}
-              description={`Total: ${data.count}`}
-            />
-          </Card>
-        </div>
-      ))}
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Overview</h1>
+      <div className="flex flex-wrap -mx-2">
+        {countData.map((data, index) => (
+          <div key={index} className="w-full sm:w-1/2 lg:w-1/3 px-2 mb-4">
+            <Card>
+              <Card.Meta
+                avatar={
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {data.icon}
+                  </div>
+                }
+                title={data.title}
+                description={`Total: ${data.count}`}
+              />
+            </Card>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
