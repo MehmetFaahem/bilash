@@ -23,10 +23,11 @@ const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { useBreakpoint } = Grid;
 
-const MemoizedMenuItem = memo(({ item, pathname }) => (
+const MemoizedMenuItem = memo(({ item, pathname, collapsed }) => (
   <Menu.Item
     style={{
-      backgroundColor: pathname === item.key ? "#006ed6" : "",
+      backgroundColor: pathname === item.key ? "rgba(0, 110, 214, 0.6)" : "",
+      paddingInline: !collapsed ? "10px" : "20px",
     }}
     key={item.key}
     icon={item.icon}
@@ -41,6 +42,7 @@ const AdminLayout = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [openKeys, setOpenKeys] = useState([]);
   const screens = useBreakpoint();
 
   useEffect(() => {
@@ -56,17 +58,33 @@ const AdminLayout = ({ children }) => {
 
   const handleNavigation = useCallback(
     (e) => {
-      router.push(e.key);
+      if (e.key && e.key !== pathname) {
+        router.push(e.key);
+      }
     },
-    [router]
+    [router, pathname]
   );
 
   const renderMenuItem = useCallback(
     (item) => (
-      <MemoizedMenuItem key={item.key} item={item} pathname={pathname} />
+      <MemoizedMenuItem
+        key={item.key}
+        item={item}
+        pathname={pathname}
+        collapsed={collapsed}
+      />
     ),
-    [pathname]
+    [pathname, collapsed]
   );
+
+  const onOpenChange = (keys) => {
+    const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
+    if (latestOpenKey && ["products", "places"].indexOf(latestOpenKey) !== -1) {
+      setOpenKeys([latestOpenKey]);
+    } else {
+      setOpenKeys(keys);
+    }
+  };
 
   return (
     <Layout>
@@ -81,6 +99,8 @@ const AdminLayout = ({ children }) => {
           mode="inline"
           onClick={handleNavigation}
           selectedKeys={[pathname]}
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
         >
           {renderMenuItem({
             key: "/admin/dashboard",
@@ -92,39 +112,22 @@ const AdminLayout = ({ children }) => {
             icon={<AppstoreOutlined />}
             title="Products"
             style={{
-              backgroundColor: pathname.startsWith("/admin/products")
-                ? "#006ed6"
-                : "",
+              marginLeft: "-15px",
             }}
           >
-            {renderMenuItem({
-              key: "/admin/products",
-              label: "All Products",
-            })}
-            {renderMenuItem({
-              key: "/admin/products/add",
-              icon: <PlusOutlined />,
-              label: "Add Products",
-            })}
+            <Menu.Item key="/admin/products">All Products</Menu.Item>
+            <Menu.Item key="/admin/products/add">Add Products</Menu.Item>
           </SubMenu>
           <SubMenu
             key="places"
             icon={<EnvironmentOutlined />}
             title="Places"
             style={{
-              backgroundColor: pathname.startsWith("/admin/places")
-                ? "#006ed6"
-                : "",
+              marginLeft: "-15px",
             }}
           >
-            {renderMenuItem({
-              key: "/admin/places",
-              label: "All Places",
-            })}
-            {renderMenuItem({
-              key: "/admin/places/sub-places",
-              label: "Sub Places",
-            })}
+            <Menu.Item key="/admin/places">All Places</Menu.Item>
+            <Menu.Item key="/admin/places/sub-places">Sub Places</Menu.Item>
           </SubMenu>
           {[
             {
