@@ -35,6 +35,8 @@ const MemoizedMenuItem = memo(({ item, pathname }) => (
   </Menu.Item>
 ));
 
+MemoizedMenuItem.displayName = "MemoizedMenuItem";
+
 const AdminLayout = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
