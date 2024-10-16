@@ -1,5 +1,6 @@
 "use client";
 import { Layout, Menu, Grid } from "antd";
+import Link from "next/link";
 import {
   DashboardOutlined,
   AppstoreOutlined,
@@ -16,11 +17,23 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { useBreakpoint } = Grid;
+
+const MemoizedMenuItem = memo(({ item, pathname }) => (
+  <Menu.Item
+    style={{
+      backgroundColor: pathname === item.key ? "#006ed6" : "",
+    }}
+    key={item.key}
+    icon={item.icon}
+  >
+    <Link href={item.key}>{item.label}</Link>
+  </Menu.Item>
+));
 
 const AdminLayout = ({ children }) => {
   const router = useRouter();
@@ -29,21 +42,36 @@ const AdminLayout = ({ children }) => {
   const screens = useBreakpoint();
 
   useEffect(() => {
-    if (screens.xs) {
-      setCollapsed(true);
-    }
-  }, [screens]);
+    const handleResize = () => {
+      if (screens.xs) {
+        setCollapsed(true);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [screens.xs]);
 
-  const handleNavigation = (e) => {
-    router.push(e.key);
-  };
+  const handleNavigation = useCallback(
+    (e) => {
+      router.push(e.key);
+    },
+    [router]
+  );
+
+  const renderMenuItem = useCallback(
+    (item) => (
+      <MemoizedMenuItem key={item.key} item={item} pathname={pathname} />
+    ),
+    [pathname]
+  );
 
   return (
     <Layout>
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={(collapsed) => setCollapsed(collapsed)}
+        onCollapse={useCallback((value) => setCollapsed(value), [])}
         style={{ position: "fixed", height: "100vh", overflow: "auto" }}
       >
         <Menu
@@ -52,23 +80,11 @@ const AdminLayout = ({ children }) => {
           onClick={handleNavigation}
           selectedKeys={[pathname]}
         >
-          {[
-            {
-              key: "/admin/dashboard",
-              icon: <DashboardOutlined />,
-              label: "Dashboard",
-            },
-          ].map((item) => (
-            <Menu.Item
-              style={{
-                backgroundColor: pathname === item.key ? "#006ed6" : "",
-              }}
-              key={item.key}
-              icon={item.icon}
-            >
-              {item.label}
-            </Menu.Item>
-          ))}
+          {renderMenuItem({
+            key: "/admin/dashboard",
+            icon: <DashboardOutlined />,
+            label: "Dashboard",
+          })}
           <SubMenu
             key="products"
             icon={<AppstoreOutlined />}
@@ -79,25 +95,15 @@ const AdminLayout = ({ children }) => {
                 : "",
             }}
           >
-            <Menu.Item
-              style={{
-                backgroundColor:
-                  pathname === "/admin/products" ? "#006ed6" : "",
-              }}
-              key="/admin/products"
-            >
-              All Products
-            </Menu.Item>
-            <Menu.Item
-              style={{
-                backgroundColor:
-                  pathname === "/admin/products/add" ? "#006ed6" : "",
-              }}
-              key="/admin/products/add"
-              icon={<PlusOutlined />}
-            >
-              Add Products
-            </Menu.Item>
+            {renderMenuItem({
+              key: "/admin/products",
+              label: "All Products",
+            })}
+            {renderMenuItem({
+              key: "/admin/products/add",
+              icon: <PlusOutlined />,
+              label: "Add Products",
+            })}
           </SubMenu>
           <SubMenu
             key="places"
@@ -109,23 +115,14 @@ const AdminLayout = ({ children }) => {
                 : "",
             }}
           >
-            <Menu.Item
-              style={{
-                backgroundColor: pathname === "/admin/places" ? "#006ed6" : "",
-              }}
-              key="/admin/places"
-            >
-              All Places
-            </Menu.Item>
-            <Menu.Item
-              style={{
-                backgroundColor:
-                  pathname === "/admin/places/sub-places" ? "#006ed6" : "",
-              }}
-              key="/admin/places/sub-places"
-            >
-              Sub Places
-            </Menu.Item>
+            {renderMenuItem({
+              key: "/admin/places",
+              label: "All Places",
+            })}
+            {renderMenuItem({
+              key: "/admin/places/sub-places",
+              label: "Sub Places",
+            })}
           </SubMenu>
           {[
             {
@@ -154,7 +151,6 @@ const AdminLayout = ({ children }) => {
               icon: <NotificationOutlined />,
               label: "Advertisements",
             },
-
             { key: "/admin/tokens", icon: <DollarOutlined />, label: "Tokens" },
             { key: "/admin/reviews", icon: <StarOutlined />, label: "Reviews" },
             {
@@ -162,17 +158,7 @@ const AdminLayout = ({ children }) => {
               icon: <MessageOutlined />,
               label: "Messages",
             },
-          ].map((item) => (
-            <Menu.Item
-              style={{
-                backgroundColor: pathname === item.key ? "#006ed6" : "",
-              }}
-              key={item.key}
-              icon={item.icon}
-            >
-              {item.label}
-            </Menu.Item>
-          ))}
+          ].map(renderMenuItem)}
         </Menu>
       </Sider>
       <Layout style={{ marginLeft: collapsed ? 80 : 200 }}>
@@ -184,4 +170,4 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-export default AdminLayout;
+export default memo(AdminLayout);
