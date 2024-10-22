@@ -24,7 +24,7 @@ const theme = {
 export default function Layout({ children }) {
   return (
     <html lang="en" className={poppins.className}>
-      <body className="px-4 pb-10 pt-5">
+      <body className="">
         <AntdRegistry>
           <ConfigProvider theme={theme}>{children}</ConfigProvider>
         </AntdRegistry>
