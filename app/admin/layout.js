@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/app/globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Poppins } from "next/font/google";
 import { ConfigProvider } from "antd";
@@ -21,10 +21,10 @@ const theme = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default function Layout({ children }) {
   return (
     <html lang="en" className={poppins.className}>
-      <body>
+      <body className="px-4 pb-10 pt-5">
         <AntdRegistry>
           <ConfigProvider theme={theme}>{children}</ConfigProvider>
         </AntdRegistry>
